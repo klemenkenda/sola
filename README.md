@@ -5,6 +5,8 @@ in Antonom (2. razred), igralce pa lahko dodaš, urediš ali izbrišeš kar v ig
 Čisti HTML/CSS/JS, brez knjižnic in brez gradnje — dvoklik na `index.html` in deluje
 (tudi brez interneta).
 
+**Igra v živo: <https://klemenkenda.github.io/sola/>**
+
 ## Zagon
 
 Odpri `index.html` v brskalniku (Edge, Chrome, Firefox). Nobenega strežnika ni treba.
@@ -76,11 +78,40 @@ Lenart na računalniku imata torej ločeni vsoti; samodejnega seštevka med napr
 ni (za to bi potrebovali strežnik z bazo), ročno pa ju združiš z gumboma
 **Shrani napredek** / **Naloži napredek**.
 
+## Objava na GitHub Pages
+
+Stran teče na <https://klemenkenda.github.io/sola/>. Ker gre za čiste datoteke brez
+gradnje, GitHub Pages zadošča — strežnika ni in ga stran ne potrebuje.
+
+Objavo opravi delovni tok [.github/workflows/pages.yml](.github/workflows/pages.yml):
+ob vsakem potisku v vejo `main` zapakira vsebino repozitorija in jo objavi. Ročno ga
+lahko pognaš v zavihku **Actions → Objava na GitHub Pages → Run workflow**.
+
+```bash
+git add -A
+git commit -m "Kaj sem spremenil"
+git push                 # čez minuto ali dve je sprememba na spletu
+```
+
+Nastavitev, ki mora biti izbrana v GitHubu (enkratno, že opravljeno):
+**Settings → Pages → Source: GitHub Actions**.
+
+Dve podrobnosti, ki jih je vredno ohraniti:
+
+- Vse poti do `css/` in `js/` so **relativne**, zato stran deluje tako v podmapi
+  (`/sola/`) kot na morebitni lastni domeni. Poti, ki se začnejo s poševnico
+  (`/css/style.css`), bi se na GitHub Pages polomile.
+- Prazna datoteka `.nojekyll` pove GitHubu, naj datotek ne obdeluje z Jekyllom.
+
+**Kaj GitHub Pages ne zna:** poganjati kode na strežniku. Ni baze, ni prijave, ni
+skupne lestvice med napravami — zato se napredek prenaša z datoteko (glej zgoraj).
+
 ## Struktura
 
 ```
 index.html            ogrodje strani in zasloni
 css/style.css         celotna grafična podoba in animacije
+.github/workflows/pages.yml   samodejna objava na GitHub Pages
 js/shramba.js         rezultati po dnevih (localStorage); seštevki dan/teden/mesec; izvoz/uvoz
 js/igralci.js         seznam igralcev (localStorage): dodajanje, urejanje, brisanje
 js/prenos.js          napredek v datoteko .json in nazaj
