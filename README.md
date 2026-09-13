@@ -1,9 +1,8 @@
 # Šolska pustolovščina
 
-Motivacijska učna igra za otroke od 1. do 9. razreda — začne se z Lenartom (4. razred)
-in Antonom (2. razred), igralce pa lahko dodaš, urediš ali izbrišeš kar v igri.
-Čisti HTML/CSS/JS, brez knjižnic in brez gradnje — dvoklik na `index.html` in deluje
-(tudi brez interneta).
+Motivacijska učna igra za otroke od 1. do 9. razreda; igralce ustvariš, urediš in
+izbrišeš kar v igri, v kodi jih ni. Čisti HTML/CSS/JS, brez knjižnic in brez gradnje —
+dvoklik na `index.html` in deluje (tudi brez interneta).
 
 **Igra v živo: <https://klemenkenda.github.io/sola/>**
 
@@ -31,6 +30,11 @@ tisto nalaganje in se ne shrani, zato otroku ne utiša igre.
 
 ### Igralci
 
+Ob prvem obisku je stran **prazna** — nobenega igralca ni in profesor Uhec povabi
+obiskovalca, naj si ga ustvari. Tako je igra takoj uporabna za kogarkoli, ne le za
+otroka, po katerem bi bila vnaprej posejana. Če izbrišeš vse igralce, se stran vrne
+v to začetno stanje.
+
 Na prvem zaslonu je poleg kartic igralcev tudi kartica **➕ Nov igralec**: vpišeš ime,
 starost in razred ter izbereš sličico in barvo. Razred igra predlaga kar sama
 (v 1. razred otroci vstopijo pri šestih letih), dokler ga ne izbereš ročno — od razreda
@@ -38,10 +42,6 @@ je odvisno, katere predmete in katere naloge otrok vidi.
 
 Svinčnik ✏️ v kotu kartice odpre urejanje istega igralca; tam je tudi izbris. **Skupaj
 z igralcem se izbrišejo tudi vse njegove točke**, zato igra pred tem vpraša za potrditev.
-
-Lenart in Anton nista več zapisana v kodi — ob prvem zagonu se le vpišeta v brskalnik,
-nato pa sta čisto navadna igralca kot vsak nov: urejata in brišeta se enako in gresta
-enako v izvoz. Če ju izbrišeš, se ob osvežitvi ne vrneta.
 
 ### Napredek na drugo napravo (izvoz in uvoz)
 
@@ -125,6 +125,7 @@ js/igre/ang-besede.js     angleščina: mednarodne besede iz vaje S-2
 js/igre/ang-prizor.js     angleščina: iskanje pojmov na narisanem prizoru
 js/igre/mat-postevanka.js matematika: poštevanka do 10
 js/igre/mat-sestevanje.js matematika: seštevanje do 10/20/100
+js/igre/mat-desetka-tetris.js matematika: padajoče kocke, ki se v parih seštejejo v 10
 js/app.js             navigacija: igralec → predmet → igra; okno za igralca, gumbi za napredek
 ```
 
@@ -140,6 +141,7 @@ js/app.js             navigacija: igralec → predmet → igra; okno za igralca,
 | Strawberry Street | Angleščina | 2.–5. | Prizor iz Starter unita, narisan v SVG: otrok poišče in klikne pojem na sliki (a pond, a playground, children …). |
 | Poštevanka do 10 | Matematika | 3.–5. | Otrok izbere eno poštevanko ali vse pomešano. Namig nariše pravokotnik pikic (npr. 7 vrstic po 9). |
 | Seštevanje | Matematika | 1.–3. | Tri stopnje: do 10, do 20 (privzeto, večinoma s prehodom čez desetico) in do 100. Namig se prilagodi računu. |
+| Desetka — tetris | Matematika | 2.–5. | Kocke s številkami 1–9 padajo z vrha. Ko se dve, ki stojita druga na drugi, seštejeta v 10, obe izgineta. Namig označi stolpce, kjer je par. |
 
 Pri številkah so vse tri stopnje **ločene naloge**, vsaka s svojim rekordom in svojimi
 točkami — tako lažja stopnja ne »pokrije« težje. Sprejeti so vsi zapisi sestavljenih
@@ -164,6 +166,32 @@ Namigi pri seštevanju:
 - **okrogle desetice** (30 + 70) — vsaka pikica je ena desetica
 - **dvomestno + enomestno** (87 + 8) — desetice ostanejo, s pikicami seštejemo le enice
 - **dvomestno + dvomestno** (57 + 39) — razstavitev obeh števil na desetice in enice
+
+### Desetka — tetris
+
+Vaja dopolnjevanja do 10 (1 + 9, 2 + 8 …), le da otrok namesto računa v zvezku lovi
+padajoče kocke. Pade **20 kock**, torej je mogočih **10 desetic**; vsaka je vredna
+10 točk (5, če si pomagal z namigom), niz zaporednih desetic pa prinese še bonus.
+Igra se konča, ko kock zmanjka ali ko kupček zraste do vrha plošče; kar ostane
+na plošči, se na koncu izpiše kot pari, ki jih velja še povaditi.
+
+Plošča ima 6 stolpcev in 7 vrstic. Pred začetkom otrok izbere hitrost padanja
+(🐢 Mirno / 🐇 Hitro / ⚡ Bliskovito); vsaka pristala kocka igro malenkost pospeši.
+
+Krmiljenje:
+
+- **tipkovnica** — ⬅️ ➡️ premikata kocko, ⬇️ jo požene za eno vrstico niže,
+  **preslednica** jo takoj spusti
+- **miška ali tablica** — tap na stolpec kocko prestavi tja, ponoven tap v isti
+  stolpec jo spusti; pod ploščo so še gumbi ◀ ⬇ ▶
+
+Vsaka številka ima svojo barvo, a pari do 10 namenoma **nimajo enake barve** —
+sicer bi otrok ujemal barve namesto seštevanja. Kocke padajo ena po ena, zato
+lahko nastane le en par naenkrat (verig ni): pristala kocka je v svojem stolpcu
+vedno najvišja.
+
+Da se kupček ne kopiči brez možnosti, igra vsake druge kocke ne izbere povsem
+naključno, ampak vzame par k eni od kock na vrhu stolpcev.
 
 ## Točkovanje
 

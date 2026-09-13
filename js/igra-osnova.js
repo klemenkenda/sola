@@ -83,7 +83,8 @@
       '<i>' + (zvezd >= 3 ? '⭐' : '☆') + '</i>' +
       '</div>' +
       '<div class="velike-tocke">+' + rez.tocke + ' točk</div>' +
-      '<p style="font-size:20px;margin:4px 0">Pravilnih: <b>' + rez.pravilnih + ' / ' + rez.skupaj +
+      '<p style="font-size:20px;margin:4px 0">' + (moznosti.oznakaPravilnih || 'Pravilnih') +
+      ': <b>' + rez.pravilnih + ' / ' + rez.skupaj +
       '</b> · Najdaljši niz: <b>' + rez.najdaljsiNiz + '</b></p>' +
       '<p style="font-size:19px">' + sporocilo + '</p>' +
       '<div id="obvestilo-rekord"></div>' +
@@ -92,8 +93,9 @@
       '<button class="gumb zelen" id="gumb-ponovi">🔁 Še enkrat</button>' +
       '<button class="gumb" id="gumb-konec">Nazaj na igre</button>' +
       '</div>' +
-      '<p style="font-size:14px;color:#7b8bab;margin-top:12px">Največ možnih točk: ' +
-      najvecTock(rez.skupaj) + ' (10 za vsak pravilen odgovor + bonus za niz)</p>' +
+      '<p style="font-size:14px;color:#7b8bab;margin-top:12px">' +
+      (moznosti.podnozje || ('Največ možnih točk: ' + najvecTock(rez.skupaj) +
+        ' (10 za vsak pravilen odgovor + bonus za niz)')) + '</p>' +
       '</div>';
 
     global.Liki.vstavi(document.getElementById('lik-konec'), zvezd >= 2 ? 'vesel' : 'navaden',

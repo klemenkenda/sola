@@ -1,19 +1,13 @@
 /* igralci.js - kdo se uči: seznam igralcev, shranjen v brskalnik
  *
- * Prej sta bila Lenart in Anton zapisana v kodi. Zdaj ju ob prvem zagonu le
- * "posejemo", nato pa seznam ureja uporabnik sam (nov igralec, sprememba,
- * izbris) - zato lahko isto stran uporablja tudi kdo drug.
+ * Igralcev ni v kodi in ob prvem obisku jih ni nobenega - stran se začne prazna,
+ * uporabnik pa si prvega igralca ustvari sam. Tako je igra enako uporabna za
+ * kogarkoli, ki jo odpre, ne le za otroka, po katerem bi bila posejana.
  */
 (function (global) {
   'use strict';
 
   var KLJUC = 'sola-pustolovscina-igralci-v1';
-
-  /* Prva zasedba - vpiše se samo, dokler uporabnik seznama še ni odprl. */
-  var PRIVZETI = [
-    { id: 'lenart', ime: 'Lenart', starost: 9, razred: 4, avatar: '🦊', barva: '#3aa0ff' },
-    { id: 'anton', ime: 'Anton', starost: 7, razred: 2, avatar: '🐻', barva: '#ff9f43' }
-  ];
 
   var AVATARJI = [
     '🦊', '🐻', '🐼', '🐨', '🦁', '🐯', '🐵', '🐶',
@@ -45,9 +39,10 @@
         if (Object.prototype.toString.call(p) === '[object Array]') return p;
       }
     } catch (e) {
-      /* poškodovani podatki - začnemo s privzetima igralcema */
+      /* poškodovani podatki - začnemo s praznim seznamom */
     }
-    return zapisi(PRIVZETI.slice());
+    /* Prazno puščamo nezapisano: dokler ni igralcev, v shrambi ni ničesar. */
+    return [];
   }
 
   function vsi() {

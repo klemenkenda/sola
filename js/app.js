@@ -112,14 +112,35 @@
     return k;
   }
 
+  /* Ob prvem obisku igralcev še ni - takrat mora stran povedati, kaj naj
+     obiskovalec stori, ne pa ga pozdraviti, kot da ga že pozna. */
+  function besediloUvoda(steviloIgralcev) {
+    if (steviloIgralcev) {
+      return {
+        podnaslov: 'Kdo se bo danes učil?',
+        oblacek: 'Živjo! Jaz sem <b>profesor Uhec</b>. Izberi svoje ime in začnimo!'
+      };
+    }
+    return {
+      podnaslov: 'Za začetek dodaj igralca.',
+      oblacek: 'Živjo! Jaz sem <b>profesor Uhec</b>. Klikni <b>Nov igralec</b>, ' +
+        'vpiši svoje ime in učenje se lahko začne!'
+    };
+  }
+
   function izrisiIgralce() {
     var posoda = document.getElementById('seznam-igralcev');
     posoda.innerHTML = '';
 
-    global.Igralci.vsi().forEach(function (igralec) {
+    var igralci = global.Igralci.vsi();
+    igralci.forEach(function (igralec) {
       posoda.appendChild(karticaIgralca(igralec));
     });
     posoda.appendChild(karticaNovega());
+
+    var uvod = besediloUvoda(igralci.length);
+    document.getElementById('podnaslov-igralci').textContent = uvod.podnaslov;
+    document.getElementById('oblacek-uvod').innerHTML = uvod.oblacek;
 
     global.Liki.vstavi(document.getElementById('sova-uvod-lik'), 'vesel', 'lik-plava');
   }
