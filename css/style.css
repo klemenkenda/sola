@@ -640,8 +640,20 @@ body::after{
 /* ---------- desetka tetris ---------- */
 .stanje-znacka.cilj{background:#efe7ff;color:#5d2fc7}
 
-/* ponovitev pred igro: nizi s tremi kockami so daljsi od parov */
-.ucenje-seznam .ucenje-par b{font-size:clamp(22px,4.6vw,34px);white-space:nowrap}
+/* Ponovitev pred igro: niz "1 + 6 + 9" je precej daljsi od para "7 + 9", zato
+   kartic ne tlacimo v enako siroke stolpce, ampak pustimo vsako tako siroko,
+   kot je njena vsebina. */
+.ucenje-seznam.siroki{
+  display:flex;flex-wrap:wrap;justify-content:center;gap:12px;
+}
+.ucenje-seznam.siroki .ucenje-par{flex:0 0 auto;min-width:120px;padding:10px 18px}
+.ucenje-seznam.siroki .ucenje-par b{white-space:nowrap}
+
+@media (max-width:520px){
+  .ucenje-seznam.siroki .ucenje-par{padding:8px 12px;min-width:0}
+  .ucenje-seznam.siroki .ucenje-par b{font-size:26px}
+  .ucenje-seznam.siroki .ucenje-par span{font-size:17px}
+}
 
 .tetris-vrh{display:flex;align-items:center;justify-content:center;gap:10px;margin:4px 0 10px}
 .tetris-oznaka{font-size:16px;font-weight:800;color:#5a7395}
@@ -703,7 +715,9 @@ body::after{
 
 .tetris-blisk{
   position:absolute;transform:translate(-50%,-50%);
-  font-size:clamp(20px,5.5vw,32px);font-weight:800;color:#2f9c45;
+  font-size:clamp(18px,5vw,30px);          /* rezerva, ce brskalnik ne pozna cqh */
+  font-size:calc(72cqh / var(--vr));
+  font-weight:800;color:#2f9c45;
   text-shadow:0 0 6px #fff,0 0 14px #fff;pointer-events:none;
   animation:tetris-blisk .9s ease-out forwards;
 }

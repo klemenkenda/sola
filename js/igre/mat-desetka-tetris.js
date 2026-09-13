@@ -175,7 +175,7 @@
       }
 
       document.getElementById('pregled').innerHTML =
-        '<div class="ucenje-seznam">' + kartice.join('') + '</div>' +
+        '<div class="ucenje-seznam siroki">' + kartice.join('') + '</div>' +
         (stopnja.najvec > 3
           ? '<p class="namig-opis">Šteje tudi štiri ali več kock — če se seštejejo v ' +
             cilj + ', izginejo vse.</p>'
@@ -553,7 +553,7 @@
           ' točk' + (stanje.niz >= O.NIZ_ZA_BONUS ? ' 🔥' : '');
 
         kocke.forEach(function (c) { c.el.classList.add('pocena'); });
-        blisk(p.vrstica + dolzina - 1, p.stolpec);
+        blisk(p.vrstica, p.stolpec, dolzina);
         global.Ucinki.zvok.pravilno();
         global.Ucinki.konfeti(10 + dolzina * 6);
 
@@ -566,13 +566,13 @@
         }, 340);
       }
 
-      /* Kratek izpis cilja nad nizom, ki izgine. */
-      function blisk(v, s) {
+      /* Kratek izpis cilja na sredini niza, ki izgine. */
+      function blisk(v, s, dolzina) {
         var b = document.createElement('div');
         b.className = 'tetris-blisk';
         b.textContent = stanje.cilj + '!';
         b.style.left = ((s + 0.5) * 100 / STOLPCEV) + '%';
-        b.style.top = ((v + 0.5) * 100 / vrstic) + '%';
+        b.style.top = ((v + dolzina / 2) * 100 / vrstic) + '%';
         polje.appendChild(b);
         global.setTimeout(function () {
           if (b.parentNode) b.parentNode.removeChild(b);

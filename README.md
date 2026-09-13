@@ -125,7 +125,7 @@ js/igre/ang-besede.js     angleščina: mednarodne besede iz vaje S-2
 js/igre/ang-prizor.js     angleščina: iskanje pojmov na narisanem prizoru
 js/igre/mat-postevanka.js matematika: poštevanka do 10
 js/igre/mat-sestevanje.js matematika: seštevanje do 10/20/100
-js/igre/mat-desetka-tetris.js matematika: padajoče kocke, ki se v parih seštejejo v 10
+js/igre/mat-desetka-tetris.js matematika: padajoče kocke, ki se seštejejo v ciljno število
 js/app.js             navigacija: igralec → predmet → igra; okno za igralca, gumbi za napredek
 ```
 
@@ -141,7 +141,7 @@ js/app.js             navigacija: igralec → predmet → igra; okno za igralca,
 | Strawberry Street | Angleščina | 2.–5. | Prizor iz Starter unita, narisan v SVG: otrok poišče in klikne pojem na sliki (a pond, a playground, children …). |
 | Poštevanka do 10 | Matematika | 3.–5. | Otrok izbere eno poštevanko ali vse pomešano. Namig nariše pravokotnik pikic (npr. 7 vrstic po 9). |
 | Seštevanje | Matematika | 1.–3. | Tri stopnje: do 10, do 20 (privzeto, večinoma s prehodom čez desetico) in do 100. Namig se prilagodi računu. |
-| Desetka — tetris | Matematika | 2.–5. | Kocke s številkami 1–9 padajo z vrha. Ko se dve, ki stojita druga na drugi, seštejeta v 10, obe izgineta. Namig označi stolpce, kjer je par. |
+| Desetka — tetris | Matematika | 2.–5. | Kocke s številkami 1–9 padajo z vrha. Ko se tiste, ki stojijo druga na drugi, seštejejo v ciljno število, izginejo. Tri stopnje: 10 z dvema kockama, nad 10 z dvema ali tremi, do 20 s poljubno mnogo. |
 
 Pri številkah so vse tri stopnje **ločene naloge**, vsaka s svojim rekordom in svojimi
 točkami — tako lažja stopnja ne »pokrije« težje. Sprejeti so vsi zapisi sestavljenih
@@ -169,14 +169,31 @@ Namigi pri seštevanju:
 
 ### Desetka — tetris
 
-Vaja dopolnjevanja do 10 (1 + 9, 2 + 8 …), le da otrok namesto računa v zvezku lovi
-padajoče kocke. Pade **20 kock**, torej je mogočih **10 desetic**; vsaka je vredna
-10 točk (5, če si pomagal z namigom), niz zaporednih desetic pa prinese še bonus.
-Igra se konča, ko kock zmanjka ali ko kupček zraste do vrha plošče; kar ostane
-na plošči, se na koncu izpiše kot pari, ki jih velja še povaditi.
+Vaja seštevanja, le da otrok namesto računa v zvezku lovi padajoče kocke. Kocke s
+številkami **1–9** padajo v mrežo 6 stolpcev; ko se tiste, ki stojijo **druga na
+drugi**, seštejejo v **ciljno število**, vse izginejo. Pade **20 kock** — če jih otrok
+pospravi vse, je plošča na koncu prazna.
 
-Plošča ima 6 stolpcev in 7 vrstic. Pred začetkom otrok izbere hitrost padanja
-(🐢 Mirno / 🐇 Hitro / ⚡ Bliskovito); vsaka pristala kocka igro malenkost pospeši.
+Stopnjo igra predlaga kar po razredu igralca, otrok pa jo lahko zamenja:
+
+| Stopnja | Razred | Cilj | Koliko kock v nizu | Plošča |
+|---|---|---|---|---|
+| 🔟 Desetica | 2. | 10 | točno 2 | 6 × 7 |
+| 🎯 Čez desetico | 3.–4. | 11–15 (izbereš) | 2 ali 3 | 6 × 8 |
+| 🏔️ Do 20 | 4.–5. | 11–20 (izbereš) | poljubno mnogo | 6 × 9 |
+
+Ciljno število otrok izbere sam — tako kot pri poštevanki izbere eno poštevanko — in
+pred začetkom vidi kartice z vsemi razstavitvami tega cilja (`5 + 9`, `6 + 8`, `7 + 7`
+za 14; pri višjih stopnjah tudi trojke, npr. `2 + 9 + 9` za 20). Višji cilj potrebuje
+višji kupček, zato ima težja stopnja **višjo ploščo**; da stran ne zraste, se plošča
+drži enake višine, manjšajo pa se kocke v njej.
+
+Vsaka sestavljena vsota je vredna 10 točk (5 po namigu), **vsaka kocka nad dvema pa še
+5 točk** — niz `8 + 7 + 4 + 1 = 20` torej prinese 20 točk. Niz treh zaporednih vsot
+doda še običajni bonus.
+
+Pred začetkom otrok izbere tudi hitrost padanja (🐢 Mirno / 🐇 Hitro / ⚡ Bliskovito);
+vsaka pristala kocka igro malenkost pospeši.
 
 Krmiljenje:
 
@@ -185,13 +202,21 @@ Krmiljenje:
 - **miška ali tablica** — tap na stolpec kocko prestavi tja, ponoven tap v isti
   stolpec jo spusti; pod ploščo so še gumbi ◀ ⬇ ▶
 
-Vsaka številka ima svojo barvo, a pari do 10 namenoma **nimajo enake barve** —
-sicer bi otrok ujemal barve namesto seštevanja. Kocke padajo ena po ena, zato
-lahko nastane le en par naenkrat (verig ni): pristala kocka je v svojem stolpcu
-vedno najvišja.
+Namig označi stolpce, v katerih bi padajoča kocka dopolnila cilj, in izpiše cel račun
+(`9 + 3 + 2 = 14`). Igra se konča, ko kock zmanjka ali ko kupček zraste do vrha plošče;
+če plošča ni prazna, zaključni zaslon ponovi, kako se cilj sestavi.
 
-Da se kupček ne kopiči brez možnosti, igra vsake druge kocke ne izbere povsem
-naključno, ampak vzame par k eni od kock na vrhu stolpcev.
+Dve podrobnosti, ki sta videti kot podrobnosti, pa nista:
+
+- Vsaka številka ima svojo barvo, a pari **nimajo enake barve** — sicer bi otrok
+  ujemal barve namesto seštevanja.
+- Kocke padajo ena po ena, zato je pristala kocka v svojem stolpcu vedno najvišja in
+  niz se lahko začne le pri njej. Verig (en niz sproži naslednjega) tu ni, ker nad
+  pospravljenim nizom ni ničesar, kar bi se posedlo.
+
+Da se kupček ne kopiči brez možnosti, igra pogosto ne izbere povsem naključne kocke,
+ampak tako, ki nekje na plošči dopolni cilj. Pri višjih ciljih je takih priložnosti
+manj, zato se to zgodi pogosteje (0,5 → 0,8).
 
 ## Točkovanje
 
@@ -238,6 +263,14 @@ zato jih igri ni treba pisati znova:
 - `Osnova.tockeZaOdgovor(brezPomoci, niz)` — 10 / 5 točk + bonus za niz
 - `Osnova.pohvala()` — naključna pohvala
 - `Osnova.koncniZaslon(posoda, ctx, rezultat, moznosti)` — zvezdice, točke, napake, shranjevanje
+
+Zaključni zaslon privzeto predpostavlja igro z vprašanji (»Pravilnih: 8 / 10«, največ
+točk = `najvecTock(skupaj)`). Igra s **drugačnim točkovanjem** to popravi z dvema
+neobveznima možnostma — brez njiju ostane vse po starem:
+
+- `oznakaPravilnih` — druga beseda namesto »Pravilnih« (»Desetka — tetris« šteje
+  pospravljene kocke, ne odgovorov)
+- `podnozje` — cela zadnja vrstica o največjem možnem številu točk
 
 1. Ustvari `js/igre/moja-igra.js` po vzoru `mat-postevanka.js`.
 2. Na koncu datoteke igro prijavi v register:
