@@ -123,11 +123,36 @@ js/igre/ang-stevila.js    angleščina: številke 0–10, 0–20 in 0–50 (tri 
 js/igre/ang-pozdravi.js   angleščina: povezovanje pozdravov s prevodi (oblački)
 js/igre/ang-besede.js     angleščina: mednarodne besede iz vaje S-2
 js/igre/ang-prizor.js     angleščina: iskanje pojmov na narisanem prizoru
+js/igre/nem-pozdravi.js   nemščina: povezovanje pozdravov s prevodi (oblački)
+js/igre/slo-abeceda.js    slovenščina: abeceda s številkami in skrivno sporočilo
+js/igre/slo-povedi.js     slovenščina: iz pomešanih besed sestavi poved
+js/igre/slo-opis-slike.js slovenščina: podčrtaj povedi, ki sodijo k narisani pikapolonici
 js/igre/mat-postevanka.js matematika: poštevanka do 10
 js/igre/mat-sestevanje.js matematika: seštevanje do 10/20/100
 js/igre/mat-desetka-tetris.js matematika: padajoče kocke, ki se seštejejo v ciljno število
 js/app.js             navigacija: igralec → predmet → igra; okno za igralca, gumbi za napredek
 ```
+
+## Naslovi strani
+
+Vsak zaslon ima svoj naslov, zato osvežitev odpre isto stran, gumb »nazaj«
+(v brskalniku in na telefonu) pa dela pričakovano. Ker stran teče kot statične
+datoteke, je pot zapisana za lojtro:
+
+| Naslov | Kaj odpre |
+| --- | --- |
+| `#/` | izbira igralca |
+| `#/nov` | okno za novega igralca |
+| `#/uredi/mojca` | okno za urejanje igralca |
+| `#/igralec/mojca` | predmeti |
+| `#/igralec/mojca/matematika` | igre pri matematiki |
+| `#/igralec/mojca/matematika/mat-postevanka` | igra |
+
+Povezavo do igre lahko tako deliš ali shraniš med zaznamke. Izbrano obdobje visi
+zadaj kot `?obdobje=teden` ali `?obdobje=mesec` (`dan` je privzet in ga ni treba
+pisati) in zgodovine ne podaljšuje — menjava pogleda torej ne doda koraka, ki bi
+ga bilo treba prekliknit nazaj. Naslov, ki ga ni več (izbrisan igralec ali igra,
+ki je ta razred nima), stran tiho preusmeri na nadrejeni zaslon.
 
 ## Igre
 
@@ -139,6 +164,10 @@ js/app.js             navigacija: igralec → predmet → igra; okno za igralca,
 | Pozdravi — poveži oblačke | Angleščina | 2.–5. | Oblački v krogu okoli sove; otrok z miško povleče črto med angleškim pozdravom in prevodom (deluje tudi klik–klik). |
 | Ugani besede | Angleščina | 3.–5. | Mednarodne besede iz vaje S-2: enkrat posluša besedo in pokaže sliko, drugič vidi sliko in izbere besedo. |
 | Strawberry Street | Angleščina | 2.–5. | Prizor iz Starter unita, narisan v SVG: otrok poišče in klikne pojem na sliki (a pond, a playground, children …). |
+| Pozdravi — poveži oblačke | Nemščina | 4.–9. | Isto kot pri angleščini, z nemškimi pozdravi. Vsaka kartica v uvodu pove tudi, kako se pozdrav izgovori (»Tschüss« → čüs). |
+| Skrivna abeceda | Slovenščina | 2.–5. | Otrok dopolni pet manjkajočih črk abecede (vsaka ima svojo številko), nato s to abecedo kot ključem razvozla skrivno sporočilo z zmajskega stolpa. |
+| Sestavi poved | Slovenščina | 2.–5. | Besede ene povedi priplavajo kot oblački v pomešanem vrstnem redu; otrok jih s klikom ali vlečenjem zloži v okvirčke pod njimi. Prvo besedo igra napiše z veliko začetnico, na koncu doda piko. |
+| Podčrtaj povedi | Slovenščina | 2.–4. | Pikapolonica se vsakič nariše drugače (očala, pričeska, obleka, pike, obutev, predmet v roki). Otrok pri vsaki povedi pove, ali sodi k sliki; povedi, ki ne sodijo, na koncu popravi z izbiro prave besede. |
 | Poštevanka do 10 | Matematika | 3.–5. | Otrok izbere eno poštevanko ali vse pomešano. Namig nariše pravokotnik pikic (npr. 7 vrstic po 9). |
 | Seštevanje | Matematika | 1.–3. | Tri stopnje: do 10, do 20 (privzeto, večinoma s prehodom čez desetico) in do 100. Namig se prilagodi računu. |
 | Desetka — tetris | Matematika | 2.–5. | Kocke s številkami 1–9 padajo z vrha. Ko se tiste, ki stojijo druga na drugi, seštejejo v ciljno število, izginejo. Tri stopnje: 10 z dvema kockama, nad 10 z dvema ali tremi, do 20 s poljubno mnogo. |
@@ -147,8 +176,15 @@ Pri številkah so vse tri stopnje **ločene naloge**, vsaka s svojim rekordom in
 točkami — tako lažja stopnja ne »pokrije« težje. Sprejeti so vsi zapisi sestavljenih
 števil: `twenty-one`, `twenty one` in `twentyone`.
 
-Pozdravi v igri: Good morning, Good afternoon, Good evening, Good night, Hello, Hi,
-Goodbye, Bye, See you later.
+Pozdravi v angleški igri: Good morning, Good afternoon, Good evening, Good night,
+Hello, Hi, Goodbye, Bye, See you later.
+
+Pozdravi v nemški igri: Guten Morgen, Guten Tag, Guten Abend, Gute Nacht, Hallo,
+Tschüss, Auf Wiedersehen, Bis später, Wie geht's? Ker otrok nemškega zapisa še ne zna
+prebrati, ima vsak pozdrav ob prevodu še približno izgovorjavo, zapisano po slovensko
+(*auf vídarzejen*), namig med igro pa jo ponovi. Igra je na voljo v vseh razredih,
+v katerih je nemščina na urniku (4.–9.), ker je pri drugem tujem jeziku vsak razred
+lahko začetniški.
 
 Pojmi v igri »Strawberry Street«: a window, trees, a teacher, a classroom, a park,
 a pond, a playground, children, mum. Prizor je v celoti narisan z SVG (brez slik iz
@@ -166,6 +202,112 @@ Namigi pri seštevanju:
 - **okrogle desetice** (30 + 70) — vsaka pikica je ena desetica
 - **dvomestno + enomestno** (87 + 8) — desetice ostanejo, s pikicami seštejemo le enice
 - **dvomestno + dvomestno** (57 + 39) — razstavitev obeh števil na desetice in enice
+
+### Skrivna abeceda
+
+Igra ima dva dela in oba uporabljata isto tabelo — **slovensko abecedo s 25 črkami**,
+kjer ima vsaka črka svojo številko (A = 1, Č = 4, Ž = 25).
+
+1. **Dopolni abecedo.** Pet naključnih črk je v tabeli skritih (`?`), otrok pa pove,
+   katera črka stoji na določenem mestu. Skrite črke nikoli niso sosednje, zato si otrok
+   lahko vedno pomaga s sosedom levo in desno — prav to pokaže **namig** (»pred njo je
+   C (3), za njo je D (5)«), ki ju v tabeli tudi obarva. Za č, š in ž so pod vnosnim
+   poljem gumbi, če jih otrok na tipkovnici nima.
+2. **Razvozlaj skrivno sporočilo.** Sporočilo je zapisano s številkami; pod vsakim
+   poljem piše številka črke. Otrok ga rešuje **besedo za besedo** — ko je beseda polna,
+   se preveri sama. Pri prvi napaki se izbrišejo samo zgrešene črke, pri drugi se beseda
+   razkrije in gre igra naprej. Črko lahko natipka ali pa klikne v **ključu** (tabela
+   abecede pod sporočilom). Ločila so že izpisana, presledki ločujejo besede.
+   Namig razkrije prvo prazno črko besede.
+
+Točkuje se vsaka črka in vsaka beseda posebej, torej po običajnih pravilih
+(10 / 5 točk + bonus za niz). Vprašanj je `5 + število besed v sporočilu`.
+Ko je sporočilo razvozlano, se izpiše v celoti — to je nagrada, ki jo otrok lovi.
+
+Sporočil je **29** in so vsa iz iste zgodbe o polanskem zmaju:
+
+> Polanski zmaj spi. Vse je v redu.
+> Zmajevi zobje so topi. Pokličite zobozdravnika.
+> Vitezi prihajajo, da obranijo Polano pred zmajem.
+
+Otrok pred začetkom izbere **✉️ krajše** (do 30 črk) ali **📜 daljše** sporočilo;
+igra vsakič izžreba drugo in nikoli dvakrat zapored istega. Novo sporočilo dodaš tako,
+da ga pripišeš v seznam `SPOROCILA` v `js/igre/slo-abeceda.js` — uporabi samo črke
+slovenske abecede (brez q, w, x in y), sicer se ne da zapisati s številko.
+
+### Sestavi poved
+
+Vaja besednega reda: iz treh (ali štirih in več) pomešanih besed nastane poved,
+ki ima smisel. Besede plavajo kot **oblački** nad vrstico praznih okvirčkov —
+otrok jih **klikne** (beseda skoči v naslednji prazen okvirček, ponoven klik jo vrne
+v nebo) ali **povleče** z miško oziroma prstom v točno določen okvirček. Ko so vsi
+okvirčki polni, se poved preveri sama.
+
+Dvoje igra opravi sama in otrok to vidi sproti: **prvo besedo zapiše z veliko
+začetnico** (v oblačku piše »ura«, v prvem okvirčku pa »Ura«), na konec vrstice pa
+postavi **piko**.
+
+- prva napaka — besede, ki že stojijo prav, ostanejo na svojem mestu, ostale se
+  vrnejo v nebo; odziv pove, ali je začetek povedi pravi
+- druga napaka — igra poved sestavi sama in gre naprej, poved se zapiše med napake
+- **namig** postavi prvo manjkajočo besedo na njeno mesto in jo pribije (velja kot pomoč)
+- **počisti** vrne vse nepribite besede nazaj v nebo
+
+Otrok pred začetkom izbere **🌤️ tri besede** (44 povedi: *Maja kuha juho.*,
+*Ura glasno tiktaka.*, *Anton noče plavati.*) ali **⛅ štiri in več** (28 povedi
+s pridevniki in okoliščinami: *Panda obvlada kung fu.*, *Klemen programira zabavno
+igrico.*, *Dva zmaja spita v jami.*). V enem krogu je **8 povedi**, vsaka je eno
+vprašanje.
+
+Povedi so v `js/igre/slo-povedi.js` zapisane tako, kot bi bile videti **sredi
+besedila** — lastna imena z veliko, vse drugo z malo začetnico, brez pike:
+
+```js
+'Maja kuha juho',
+{ poved: 'ura glasno tiktaka', tudi: ['ura tiktaka glasno'] },
+```
+
+Kjer je naraven tudi drug besedni red, ga naštejemo v `tudi` — vsi našteti redi
+veljajo za pravilne. Nova poved je torej ena vrstica več v seznamu `LAZJE` ali `TEZJE`.
+
+### Podčrtaj povedi
+
+Vaja branja z razumevanjem po vzoru delovnega zvezka: **podčrtaj povedi, ki sodijo
+k sličici**, tiste, ki ne sodijo, pa popravi. Slike ni v datoteki — **pikapolonico
+nariše igra sama** (SVG) iz osmih naključno izbranih lastnosti:
+
+| Lastnost | Možnosti | Poved |
+|---|---|---|
+| oblika očal | okrogla, oglata, srčasta | *Polona nosi okrogla očala.* |
+| barva očal | rdeča, modra, zelena, rumena | *Njena očala so rdeča.* |
+| pričeska | dolga kita, dva čopka, kratki, kodrasti lasje | *Polona ima dolgo kito.* |
+| barva las | rjavi, rdeči, črni, rumeni | *Njeni lasje so rjavi.* |
+| barva obleke | rdeče, zelene, modre, rumene | *Njena obleka je zelene barve.* |
+| barva pik | črne, bele, rumene, modre | *Na obleki ima črne pike.* |
+| obutev | škornje, superge, natikače, copate | *Obuta je v škornje.* |
+| predmet v roki | svinčnik, knjigo, žogo, dežnik | *V roki drži svinčnik.* |
+
+Povedi nastanejo iz **istih** lastnosti kot risba: če je v povedi prava vrednost,
+poved drži, sicer je vanjo podtaknjena katera koli druga možnost. Slika in besedilo
+se torej nikoli ne razideta in nalog ni treba pisati na roko.
+
+Igra teče v dveh delih, tako kot v zvezku:
+
+1. **Podčrtaj.** Za vsako poved otrok klikne **✏️ Podčrtaj** ali **🚫 Ne sodi**.
+   Ker gre za odločitev med dvema možnostma, ima **en sam poskus** — drugi bi bil
+   že odgovor. Podčrtane povedi dobijo zeleno črto, ostale ostanejo sive.
+2. **Popravi.** Vsako poved, ki ne sodi, otrok popravi: izbere pravo besedo med
+   tremi (med njimi je tudi tista napačna iz prvega dela). Popravljena beseda se
+   zapiše v seznam in poved se podčrta. Tu velja običajno pravilo — druga izbira
+   je vredna 5 točk, po njej igra pokaže pravilno.
+
+Otrok pred začetkom izbere **🌤️ eno sliko** (6 povedi, od tega 3 napačne → 9 nalog)
+ali **⛅ dve sliki** (po 5 povedi, od tega 2 napačni → 14 nalog).
+
+Novo lastnost dodaš tako, da jo pripišeš v seznam `LASTNOSTI` v
+`js/igre/slo-opis-slike.js` (poved s `zapis` in seznam `moznosti`) in narišeš njene
+različice v `likSvg`. Pike se nikoli ne izžrebajo v barvi obleke — na risbi jih ne
+bi bilo videti in otrok povedi o njih ne bi mogel preveriti.
 
 ### Desetka — tetris
 
@@ -358,6 +500,9 @@ V `js/podatki.js` predmet opišejo tri polja:
 
 - `Liki.reagiraj(element, uspeh)` — sova poskoči (uspeh) ali potarna (napaka)
 - `Ucinki.konfeti(60)`, `Ucinki.zvok.pravilno() / .napacno() / .klik() / .konec()`
-- `Ucinki.izgovori('seven', 'en-US')` — izgovorjava (za jezikovne igre)
+- `Ucinki.izgovori('seven')` — izgovorjava (za jezikovne igre); drugi argument pove
+  jezik, npr. `Ucinki.izgovori('Guten Morgen', 'de-DE')`. Brez njega igra govori
+  angleško. Glas se izbere posebej za vsak jezik — nemškega pozdrava ne sme
+  prebrati angleški glas.
 - `Ucinki.zvokVklopljen()`, `Ucinki.nastaviZvok(true/false)`, `Ucinki.preklopiZvok()` —
   stanje zvoka (gumb 🔊 spodaj desno; utišano stanje velja za piske in izgovorjavo)

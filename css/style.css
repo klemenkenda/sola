@@ -279,6 +279,8 @@ body::after{
 .fraza-par:hover{transform:translateY(-4px);border-color:var(--modra)}
 .fraza-par b{display:block;font-size:19px;color:#1f66b5}
 .fraza-par span{font-size:16px;color:#5a7395}
+/* priblizna izgovorjava (nemscina) - tiho pod prevodom */
+.fraza-par small{display:block;margin-top:2px;font-size:13px;color:#93a3bd;font-style:italic}
 
 .povezi-glava{display:flex;align-items:center;gap:12px;justify-content:center;flex-wrap:wrap;margin:6px 0 10px}
 .povezi-glava .lik-mesto{width:86px}
@@ -342,6 +344,8 @@ body::after{
 .oblak-kartica .b3{width:21%;height:68%;left:46%;top:-46%}
 
 .oblak-kartica.ang{--polnilo:#eaf4ff;--rob:#a8cff8}
+/* nemscina ima barvo predmeta (jantar), da se loci od slovenske strani */
+.oblak-kartica.nem{--polnilo:#ffeede;--rob:#f2a765}
 .oblak-kartica.slo{--polnilo:#f5edff;--rob:#c8a9f5}
 .oblak-kartica:hover:not(:disabled){transform:translateY(-3px)}
 .oblak-kartica.izbrana,.oblak-kartica.cilj{
@@ -751,4 +755,199 @@ body::after{
 @media (max-width:520px){
   .tetris-tipka{width:64px;height:52px;font-size:22px}
   .tetris-mini{width:38px;height:38px;font-size:20px}
+}
+
+/* ---------- skrivna abeceda ---------- */
+.abeceda-mreza{
+  display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin:14px auto 6px;max-width:720px;
+}
+.abeceda-celica{
+  width:46px;padding:5px 0 3px;font-family:var(--pisava);
+  display:flex;flex-direction:column;align-items:center;
+  background:#fff;border:3px solid #dfe9f7;border-radius:12px;color:var(--temno);
+}
+.abeceda-celica b{font-size:22px;line-height:1.05}
+.abeceda-celica i{font-style:normal;font-size:12px;font-weight:800;color:#7b8bab}
+.abeceda-celica.prazna{background:#fff6dc;border-color:var(--rumena);border-style:dashed}
+.abeceda-celica.prazna b{color:#c99500}
+.abeceda-celica.aktivna{border-color:var(--vijolicna);border-style:solid;
+  box-shadow:0 0 0 4px rgba(155,107,255,.25);animation:utripaj-namig .9s ease-in-out infinite}
+.abeceda-celica.sosed{background:#eaf4ff;border-color:var(--modra)}
+.abeceda-celica.resena{background:#effbf1;border-color:var(--zelena)}
+.abeceda-celica.resena b{color:#2f9c45}
+
+/* ključ med razvozlavanjem: celice so gumbi, ki vpišejo črko */
+.abeceda-mreza.kljuc .abeceda-celica{cursor:pointer;transition:.12s;box-shadow:0 3px 0 #cfdcee}
+.abeceda-mreza.kljuc .abeceda-celica:hover{transform:translateY(-2px);border-color:var(--modra)}
+.abeceda-mreza.kljuc .abeceda-celica:active{transform:translateY(2px);box-shadow:none}
+
+/* pri abecedi se vpisuje ena sama črka - široko polje za števila bi bilo videti prazno */
+#odgovor.crka-vnos{width:120px;text-transform:uppercase}
+
+.posebne-crke{display:flex;gap:8px;align-items:center;justify-content:center;margin-top:10px}
+.posebne-crke span{font-size:15px;font-weight:800;color:#5a7395}
+.posebne-crke button{
+  font-family:var(--pisava);font-size:22px;font-weight:800;color:var(--temno);
+  width:46px;height:42px;cursor:pointer;
+  background:#fff;border:3px solid #dfe9f7;border-radius:12px;box-shadow:0 3px 0 #cfdcee;transition:.12s;
+}
+.posebne-crke button:hover{transform:translateY(-2px);border-color:var(--modra)}
+.posebne-crke button:active{transform:translateY(2px);box-shadow:none}
+
+/* zapis sporočila: besede so bloki, vsaka črka svoje polje s številko pod njim */
+.sporocilo-blok{
+  display:flex;flex-wrap:wrap;gap:8px 14px;justify-content:center;
+  background:#f6f9ff;border:3px dashed #cfdcee;border-radius:20px;padding:14px 10px;margin:14px 0 4px;
+}
+.sporocilo-beseda{
+  display:flex;flex-wrap:wrap;align-items:flex-start;gap:4px;
+  padding:5px 6px;border-radius:14px;border:3px solid transparent;
+}
+.sporocilo-beseda.aktivna{background:#fff;border-color:var(--rumena);box-shadow:0 0 0 4px rgba(255,197,61,.25)}
+.sporocilo-beseda.resena{background:#effbf1;border-color:#bdeecb}
+.sporocilo-beseda.razkrita{background:#fff0f0;border-color:#ffc9c9;border-style:dashed}
+.crka{display:flex;flex-direction:column;align-items:center;gap:2px;height:58px}
+.crka input{
+  font-family:var(--pisava);font-size:24px;font-weight:800;text-align:center;color:var(--temno);
+  width:36px;height:42px;padding:0;text-transform:uppercase;
+  background:#fff;border:3px solid #dfe9f7;border-radius:10px;
+}
+.crka input:focus{outline:none;border-color:var(--vijolicna);background:#faf6ff;
+  box-shadow:0 0 0 4px rgba(155,107,255,.22)}
+.crka input:disabled{background:#fff;color:var(--temno);opacity:1;border-color:#e8eefa}
+.crka input.napacna{border-color:var(--rdeca);background:#fff0f0;animation:tresenje .4s}
+.crka input.namignjena{border-color:var(--rumena);background:#fff6dc}
+.crka i{font-style:normal;font-size:13px;font-weight:800;color:#7b8bab}
+.crka.locilo{
+  display:flex;align-items:center;justify-content:center;
+  font-size:26px;font-weight:800;padding-bottom:16px;width:16px;
+}
+
+.razkritje{
+  font-size:clamp(20px,3.4vw,30px);font-weight:800;line-height:1.35;color:#5d2fc7;
+  background:#f7f2ff;border:3px solid #d9c8ff;border-radius:20px;
+  padding:16px 18px;margin:10px 0 4px;
+}
+
+@media (max-width:520px){
+  .abeceda-celica{width:38px}
+  .abeceda-celica b{font-size:19px}
+  .crka input{width:30px;height:36px;font-size:20px}
+  .crka{height:52px}
+  .sporocilo-blok{gap:6px 10px;padding:10px 6px}
+}
+
+/* ---------- sestavi poved ---------- */
+.primer-poved{
+  display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:center;
+  background:#f6f9ff;border:3px dashed #cfdcee;border-radius:18px;padding:10px 14px;margin:14px 0 4px;
+  font-size:19px;
+}
+.primer-besede{color:#5a7395;font-weight:700}
+.primer-pusc{color:var(--modra);font-weight:800}
+.primer-poved b{color:#2f9c45}
+
+/* nebo, v katerem plavajo pomešane besede */
+.nebo-besed{
+  display:flex;flex-wrap:wrap;gap:6px 14px;justify-content:center;align-items:flex-end;
+  min-height:110px;padding:8px 12px 14px;margin-top:10px;
+  background:linear-gradient(180deg,#eaf6ff,#f7fbff);
+  border:3px dashed #cfe3ff;border-radius:24px;transition:.15s;
+}
+.nebo-besed.cilj{border-color:var(--rumena);background:#fffaf0}
+.oblak-kartica.beseda{--polnilo:#fff;--rob:#a8cff8;margin-top:20px}
+.oblak-kartica.beseda .telo{font-size:20px;padding:11px 18px}
+/* besedni oblaček je ožji od tistih v krogu - bule zato položimo nižje in širše,
+   sicer ne bi bile videti kot oblak, ampak kot ušesa */
+.oblak-kartica.beseda .b1{width:46%;height:66%;left:5%;top:-30%}
+.oblak-kartica.beseda .b2{width:34%;height:54%;right:7%;top:-24%}
+.oblak-kartica.beseda .b3{width:28%;height:44%;left:42%;top:-22%}
+.oblak-kartica.beseda.vlecena{opacity:.3}
+.oblak-kartica.beseda.pribita{--polnilo:#fff6dc;--rob:#ffc53d;cursor:default}
+.oblak-kartica.beseda.pravilna{--polnilo:#e6f9ea;--rob:#5cc270;color:#2f7a3f}
+.oblak-kartica.beseda:disabled{cursor:default}
+.oblak-kartica.klon{
+  position:fixed;z-index:80;margin:0;pointer-events:none;
+  transform:translate(-50%,-50%) scale(1.06);
+}
+
+/* vrstica, v katero otrok zloži poved */
+.poved-vrstica{
+  display:flex;flex-wrap:wrap;gap:8px;justify-content:center;align-items:flex-end;
+  margin-top:16px;
+}
+.poved-vrstica.zgresena{animation:tresenje .4s}
+.mesto{
+  display:flex;align-items:flex-end;justify-content:center;
+  min-width:104px;min-height:74px;padding:0 4px;
+  border:3px dashed #b9d4f2;border-radius:20px;background:rgba(255,255,255,.55);transition:.15s;
+}
+.mesto i{font-style:normal;font-weight:800;font-size:20px;color:#a8bdd8;margin-bottom:14px}
+.mesto.polno{border-color:transparent;background:none;min-width:0;padding:0}
+.mesto.naslednje{border-color:var(--vijolicna);background:#faf6ff}
+.mesto.cilj{border-color:var(--rumena);background:#fff6dc}
+.mesto.pravilno{border-color:transparent}
+.mesto.razkrito{border-color:transparent}
+/* prvo besedo v povedi igra napiše z veliko začetnico */
+.poved-vrstica .mesto:first-child .telo{text-transform:capitalize}
+.pika{font-size:40px;font-weight:800;line-height:1;color:var(--temno);margin:0 0 8px 2px}
+
+@media (max-width:520px){
+  .oblak-kartica.beseda .telo{font-size:17px;padding:9px 13px}
+  .mesto{min-width:80px;min-height:66px}
+  .nebo-besed{gap:4px 10px;min-height:96px}
+  .primer-poved{font-size:17px}
+}
+
+/* ---------- podčrtaj povedi (slika + povedi) ---------- */
+.opis-ovoj{display:flex;gap:18px;align-items:flex-start;flex-wrap:wrap;margin-top:12px}
+.opis-slika{
+  flex:0 0 236px;max-width:100%;margin:0 auto;
+  background:linear-gradient(180deg,#fffdf6,#fff3d9);
+  border:4px solid #ffe3a8;border-radius:24px;padding:8px 8px 2px;
+  box-shadow:0 6px 0 #f0d79c;
+}
+.opis-risba{display:block;width:100%;height:auto}
+.opis-ime{text-align:center;font-weight:800;font-size:18px;color:#8a6100;margin:2px 0 6px}
+.opis-desno{flex:1 1 320px;min-width:270px}
+
+/* povedi so videti kot v delovnem zvezku - druga pod drugo, s prostorom za črto */
+.opis-povedi{list-style:none;margin:0;padding:0}
+.opis-poved{
+  display:flex;gap:9px;align-items:flex-start;
+  font-size:19px;font-weight:700;line-height:1.4;
+  padding:7px 10px;margin-bottom:2px;
+  border:3px solid transparent;border-radius:14px;transition:.15s;
+}
+.opis-znak{flex:0 0 20px;text-align:center;color:#c0cfe4}
+.opis-poved.trenutna{background:#faf6ff;border-color:var(--vijolicna)}
+.opis-poved.podcrtana .opis-znak{color:#2f9c45}
+.opis-poved.preskocena{color:#8195b3}
+.opis-poved.zmota{background:#fff0f0}
+.opis-poved.zmota .opis-znak{color:var(--rdeca)}
+
+/* podčrtana poved dobi zeleno črto, kot bi jo otrok potegnil s svinčnikom */
+.opis-poved.podcrtana .opis-besedilo,
+.opis-besedilo.podcrtano{
+  text-decoration:underline;text-decoration-color:var(--zelena);
+  text-decoration-thickness:4px;text-underline-offset:5px;
+}
+.opis-popravek{color:#2f9c45}
+
+/* poved z luknjo, ki jo otrok zapolni z izbiro besede */
+.opis-naloga{font-size:21px;font-weight:800;text-align:center;margin:16px 0 2px}
+.opis-luknja{
+  display:inline-block;min-width:76px;
+  border-bottom:4px solid var(--vijolicna);color:var(--vijolicna);text-align:center;
+}
+
+/* uvod: primer podčrtane in nepodčrtane povedi */
+.opis-vzorec{display:flex;gap:9px;align-items:flex-start;font-size:19px;font-weight:700;margin:0}
+.opis-razlaga{margin:2px 0 14px 29px;font-size:16px;font-weight:700;color:#5a7395}
+
+@media (max-width:640px){
+  .opis-ovoj{justify-content:center}
+  .opis-slika{flex-basis:200px}
+  .opis-poved,.opis-vzorec{font-size:17px}
+  .opis-naloga{font-size:19px}
 }

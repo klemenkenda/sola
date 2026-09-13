@@ -12,6 +12,10 @@
   var trenutniPredmet = null;
   var obdobje = 'dan';
 
+  var stanje = {};        /* kar je zdaj na zaslonu, razbrano iz naslova */
+  var globina = 0;        /* koliko korakov smo naredili znotraj strani */
+  var zadnjiNaslov = null;
+
   var glava = document.getElementById('glava');
   var gumbNazaj = document.getElementById('gumb-nazaj');
   var gumbZvok = document.getElementById('gumb-zvok');
@@ -19,6 +23,188 @@
   function oznakaObdobja() {
     return OBDOBJA.filter(function (o) { return o.id === obdobje; })[0].kratko;
   }
+
+  /* ---------- naslov strani ----------
+
+     Vsak zaslon ima svoj naslov, da osvežitev odpre isto stran in da gumb
+     »nazaj« v brskalniku dela pričakovano. Stran teče kot statične datoteke
+     (tudi na GitHub Pages), zato pot zapišemo za lojtro:
+
+       #/                                    izbira igralca
+       #/nov                                 okno za novega igralca
+       #/uredi/<igralec>                     okno za urejanje igralca
+       #/igralec/<igralec>                   predmeti
+       #/igralec/<igralec>/<predmet>         igre predmeta
+       #/igralec/<igralec>/<predmet>/<igra>  igra
+
+     Izbrano obdobje je le drug pogled na iste podatke, zato visi zadaj kot
+     ?obdobje=teden in zgodovine ne podaljšuje. */
+
+  function pot(s) {
+    if (s.okno === 'nov') return ['nov'];
+    if (s.okno === 'uredi') return ['uredi', s.urejani];
+    if (!s.igralec) return [];
+    var deli = ['igralec', s.igralec];
+    if (s.predmet) deli.push(s.predmet);
+    if (s.igra) deli.push(s.igra);
+    return deli;
+  }
+
+  function vNaslov(s) {
+    var deli = pot(s).map(encodeURIComponent).join('/');
+    var poizvedba = obdobje === 'dan' ? '' : '?obdobje=' + obdobje;
+    var lojtra = (deli || poizvedba) ? '#/' + deli + poizvedba : '';
+    return global.location.pathname + global.location.search + lojtra;
+  }
+
+  function jeObdobje(id) {
+    return OBDOBJA.some(function (o) { return o.id === id; });
+  }
+
+  /* Naslov v stanje; karkoli neznanega pristane na začetnem zaslonu. */
+  function izNaslova() {
+    var lojtra = String(global.location.hash || '').replace(/^#/, '');
+    var meja = lojtra.indexOf('?');
+    var poizvedba = meja === -1 ? '' : lojtra.slice(meja + 1);
+    var deli = (meja === -1 ? lojtra : lojtra.slice(0, meja))
+      .split('/')
+      .filter(function (d) { return d !== ''; })
+      .map(function (d) {
+        try { return decodeURIComponent(d); } catch (n) { return d; }
+      });
+
+    var najdeno = poizvedba.match(/(?:^|&)obdobje=([^&]*)/);
+    obdobje = najdeno && jeObdobje(najdeno[1]) ? najdeno[1] : 'dan';
+
+    if (deli[0] === 'nov') return { okno: 'nov' };
+    if (deli[0] === 'uredi' && deli[1]) return { okno: 'uredi', urejani: deli[1] };
+    if (deli[0] === 'igralec' && deli[1]) {
+      return { igralec: deli[1], predmet: deli[2] || null, igra: deli[3] || null };
+    }
+    return {};
+  }
+
+  /* Gre na nov naslov. zamenjaj = true prepiše trenutni vnos v zgodovini
+     (preusmeritve in menjava obdobja), da se gumb »nazaj« ne zatika. */
+  function pojdi(novo, zamenjaj) {
+    var naslov = vNaslov(novo);
+    var novaGlobina = zamenjaj ? globina : globina + 1;
+    try {
+      global.history[zamenjaj ? 'replaceState' : 'pushState'](
+        { globina: novaGlobina }, '', naslov);
+      globina = novaGlobina;
+    } catch (n) {
+      global.location.hash = naslov.split('#')[1] || '';
+    }
+    zadnjiNaslov = global.location.hash;
+    uporabi(novo);
+  }
+
+  function nadrejeno() {
+    if (stanje.igra) return { igralec: stanje.igralec, predmet: stanje.predmet };
+    if (stanje.predmet) return { igralec: stanje.igralec };
+    return {};
+  }
+
+  /* Znotraj strani stopimo po zgodovini nazaj, ob neposrednem obisku
+     (npr. deljena povezava do igre) pa na nadrejeni zaslon. */
+  function nazaj() {
+    if (globina > 0) global.history.back();
+    else pojdi(nadrejeno(), true);
+  }
+
+  function najdiPredmet(igralec, id) {
+    return global.Podatki.predmetiZaRazred(igralec.razred).filter(function (p) {
+      return p.id === id;
+    })[0] || null;
+  }
+
+  function najdiIgro(igralec, predmet, id) {
+    return global.Igre.zaPredmet(predmet.id, igralec.razred).filter(function (i) {
+      return i.id === id;
+    })[0] || null;
+  }
+
+  /* Izriše zaslon, ki ga opisuje stanje. Kar ne obstaja več (izbrisan igralec,
+     igra, ki je ta razred nima), nas preusmeri na nadrejeni zaslon. */
+  function uporabi(novo) {
+    stanje = novo;
+    poravnajNaslov();
+
+    if (novo.okno) {
+      var urejani = novo.okno === 'uredi' ? global.Igralci.najdi(novo.urejani) : null;
+      if (novo.okno === 'uredi' && !urejani) { pojdi({}, true); return; }
+
+      trenutniIgralec = null;
+      trenutniPredmet = null;
+      izrisiIgralce();
+      pokaziZaslon('zaslon-igralci');
+      odpriOkno(urejani);
+      return;
+    }
+
+    zapriOkno();
+
+    var igralec = novo.igralec ? global.Igralci.najdi(novo.igralec) : null;
+    if (novo.igralec && !igralec) { pojdi({}, true); return; }
+
+    trenutniIgralec = igralec;
+    if (!igralec) {
+      trenutniPredmet = null;
+      izrisiIgralce();
+      pokaziZaslon('zaslon-igralci');
+      return;
+    }
+
+    osveziGlavo();
+
+    var predmet = novo.predmet ? najdiPredmet(igralec, novo.predmet) : null;
+    if (novo.predmet && !predmet) { pojdi({ igralec: igralec.id }, true); return; }
+
+    trenutniPredmet = predmet;
+    if (!predmet) {
+      izrisiPredmete();
+      pokaziZaslon('zaslon-predmeti');
+      return;
+    }
+
+    var igra = novo.igra ? najdiIgro(igralec, predmet, novo.igra) : null;
+    if (novo.igra && !igra) { pojdi({ igralec: igralec.id, predmet: predmet.id }, true); return; }
+
+    if (!igra) {
+      izrisiIgre();
+      pokaziZaslon('zaslon-igre');
+      return;
+    }
+
+    zazeniIgro(igra);
+  }
+
+  /* Naslov v vrstici naj bo zapisan tako, kot bi ga zapisali sami - tudi kadar
+     ga je natipkal uporabnik ali kadar smo obdobje prebrali iz njega. */
+  function poravnajNaslov() {
+    var naslov = vNaslov(stanje);
+    var zdaj = global.location.pathname + global.location.search + global.location.hash;
+    if (zdaj === naslov) return;
+    try {
+      global.history.replaceState({ globina: globina }, '', naslov);
+      zadnjiNaslov = global.location.hash;
+    } catch (n) { /* brez zgodovine teče stran naprej z neurejenim naslovom */ }
+  }
+
+  /* Gumba naprej/nazaj v brskalniku sprožita popstate, ročno popravljen naslov
+     pa le hashchange - poslušamo oba, dvojnik ujame zadnjiNaslov. */
+  global.addEventListener('popstate', function (dogodek) {
+    globina = (dogodek.state && dogodek.state.globina) || 0;
+    zadnjiNaslov = global.location.hash;
+    uporabi(izNaslova());
+  });
+
+  global.addEventListener('hashchange', function () {
+    if (global.location.hash === zadnjiNaslov) return;
+    zadnjiNaslov = global.location.hash;
+    uporabi(izNaslova());
+  });
 
   /* ---------- navigacija ---------- */
   function pokaziZaslon(id) {
@@ -39,7 +225,7 @@
   }
 
   /* Vrstica gumbov Danes / Ta teden / Ta mesec. */
-  function izrisiObdobja(posoda, obNapravi) {
+  function izrisiObdobja(posoda) {
     posoda.innerHTML = '';
     OBDOBJA.forEach(function (o) {
       var c = document.createElement('button');
@@ -49,8 +235,7 @@
       c.addEventListener('click', function () {
         global.Ucinki.zvok.klik();
         obdobje = o.id;
-        osveziGlavo();
-        obNapravi();
+        pojdi(stanje, true);    /* isti zaslon, le drug pogled - zato zamenjamo */
       });
       posoda.appendChild(c);
     });
@@ -84,15 +269,12 @@
     k.querySelector('.uredi').addEventListener('click', function (dogodek) {
       dogodek.stopPropagation();          /* svinčnik ne sme začeti igre */
       global.Ucinki.zvok.klik();
-      odpriOkno(igralec);
+      pojdi({ okno: 'uredi', urejani: igralec.id });
     });
 
     k.addEventListener('click', function () {
       global.Ucinki.zvok.klik();
-      trenutniIgralec = igralec;
-      osveziGlavo();
-      izrisiPredmete();
-      pokaziZaslon('zaslon-predmeti');
+      pojdi({ igralec: igralec.id });
     });
 
     return k;
@@ -107,7 +289,7 @@
       '<div class="razred">Dodaj sebe ali prijatelja</div>';
     k.addEventListener('click', function () {
       global.Ucinki.zvok.klik();
-      odpriOkno(null);
+      pojdi({ okno: 'nov' });
     });
     return k;
   }
@@ -154,7 +336,7 @@
     document.getElementById('pozdrav-predmeti').textContent =
       'Pozdravljen, ' + trenutniIgralec.ime + '! Kaj se bomo učili?';
 
-    izrisiObdobja(document.getElementById('obdobje-predmeti'), izrisiPredmete);
+    izrisiObdobja(document.getElementById('obdobje-predmeti'));
 
     var posoda = document.getElementById('seznam-predmetov');
     posoda.innerHTML = '';
@@ -182,9 +364,7 @@
 
       k.addEventListener('click', function () {
         global.Ucinki.zvok.klik();
-        trenutniPredmet = predmet;
-        izrisiIgre();
-        pokaziZaslon('zaslon-igre');
+        pojdi({ igralec: trenutniIgralec.id, predmet: predmet.id });
       });
       posoda.appendChild(k);
     });
@@ -195,7 +375,7 @@
     document.getElementById('naslov-predmeta').textContent =
       trenutniPredmet.ikona + ' ' + trenutniPredmet.naziv;
 
-    izrisiObdobja(document.getElementById('obdobje-igre'), izrisiIgre);
+    izrisiObdobja(document.getElementById('obdobje-igre'));
 
     var posoda = document.getElementById('seznam-iger');
     posoda.innerHTML = '';
@@ -256,14 +436,17 @@
         '<span class="znacka rekord">Najbolje ' + oznakaObdobja() + ': ' + rekord + ' ⭐</span>' +
         '<span class="znacka">Poskusov: ' + poskusi + '</span>' +
         (izziv ? '<span class="znacka izziv">Izziv 💪</span>' : '');
-      k.addEventListener('click', function () { zazeniIgro(igra); });
+      k.addEventListener('click', function () {
+        global.Ucinki.zvok.klik();
+        pojdi({ igralec: trenutniIgralec.id, predmet: trenutniPredmet.id, igra: igra.id });
+      });
       mreza.appendChild(k);
     });
   }
 
   /* ---------- zagon igre ---------- */
+  /* Zvok klika sproži klicatelj - igro lahko odpre tudi naslov ob osvežitvi. */
   function zazeniIgro(igra) {
-    global.Ucinki.zvok.klik();
     var posoda = document.getElementById('igra-vsebina');
     posoda.innerHTML = '';
     pokaziZaslon('zaslon-igra');
@@ -282,28 +465,14 @@
         }
         return izid;
       },
-      nazaj: function () {
-        izrisiIgre();
-        pokaziZaslon('zaslon-igre');
-      }
+      nazaj: nazaj
     });
   }
 
   /* ---------- gumb nazaj ---------- */
   gumbNazaj.addEventListener('click', function () {
     global.Ucinki.zvok.klik();
-    var aktiven = document.querySelector('.zaslon.aktiven').id;
-
-    if (aktiven === 'zaslon-igra') {
-      izrisiIgre();
-      pokaziZaslon('zaslon-igre');
-    } else if (aktiven === 'zaslon-igre') {
-      izrisiPredmete();
-      pokaziZaslon('zaslon-predmeti');
-    } else {
-      izrisiIgralce();
-      pokaziZaslon('zaslon-igralci');
-    }
+    nazaj();
   });
 
   /* ---------- gumb za zvok ---------- */
@@ -423,6 +592,13 @@
     urejaniId = null;
   }
 
+  /* Okno je svoj vnos v zgodovini, zato ga zapremo z odhodom z njegovega naslova.
+     Tako ga gumb »nazaj« na telefonu zapre, namesto da bi zapustil stran. */
+  function zapustiOkno() {
+    zapriOkno();
+    nazaj();
+  }
+
   /* V 1. razred otroci vstopijo pri šestih letih - razred zato predlagamo sami,
      dokler ga uporabnik ne izbere ročno. */
   vnosStarost.addEventListener('input', function () {
@@ -464,8 +640,7 @@
     }
 
     global.Ucinki.zvok.klik();
-    zapriOkno();
-    izrisiIgralce();
+    zapustiOkno();
   }
 
   function izbrisiIgralca() {
@@ -479,23 +654,22 @@
     global.Igralci.izbrisi(urejaniId);
     if (trenutniIgralec && trenutniIgralec.id === urejaniId) trenutniIgralec = null;
 
-    zapriOkno();
-    izrisiIgralce();
+    zapustiOkno();
   }
 
   document.getElementById('gumb-shrani-igralca').addEventListener('click', shraniIgralca);
   document.getElementById('gumb-preklici-igralca').addEventListener('click', function () {
     global.Ucinki.zvok.klik();
-    zapriOkno();
+    zapustiOkno();
   });
   gumbIzbrisi.addEventListener('click', izbrisiIgralca);
 
   /* klik mimo okna in tipka Esc zapreta okno */
   okno.addEventListener('click', function (dogodek) {
-    if (dogodek.target === okno) zapriOkno();
+    if (dogodek.target === okno) zapustiOkno();
   });
   document.addEventListener('keydown', function (dogodek) {
-    if (dogodek.key === 'Escape' && !okno.classList.contains('skrito')) zapriOkno();
+    if (dogodek.key === 'Escape' && !okno.classList.contains('skrito')) zapustiOkno();
   });
 
   /* ---------- napredek v datoteko in nazaj ---------- */
@@ -541,6 +715,9 @@
 
   /* ---------- zagon ---------- */
   osveziGumbZvok();
-  izrisiIgralce();
-  pokaziZaslon('zaslon-igralci');
+  zadnjiNaslov = global.location.hash;
+  try {
+    global.history.replaceState({ globina: 0 }, '', global.location.href);
+  } catch (n) { /* brez zgodovine stran dela naprej, le gumb nazaj je slabši */ }
+  uporabi(izNaslova());
 })(window);

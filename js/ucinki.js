@@ -98,20 +98,29 @@
     konec: function () { ton(523, 0, 0.16); ton(659, 0.13, 0.16); ton(784, 0.26, 0.16); ton(1046, 0.39, 0.36); }
   };
 
-  /* --- izgovorjava anglescine --- */
+  /* --- izgovorjava tujih jezikov --- */
 
   /* Iščemo svetel, otroški ali ženski glas - privzeti sistemski je pogosto moški in zamolkel.
-     Vrstni red: Ana (otroški glas v Windows), nato znani ženski glasovi. */
-  var ZELENI = ['ana', 'jenny', 'aria', 'michelle', 'zira', 'eva', 'hazel', 'samantha',
-    'karen', 'moira', 'tessa', 'female'];
+     Vsak jezik ima svoj seznam, ker se imena glasov med jeziki ne ponavljajo
+     (Ana je otroški glas v Windows, Anna je nemški glas v macOS). */
+  var ZELENI = {
+    en: ['ana', 'jenny', 'aria', 'michelle', 'zira', 'eva', 'hazel', 'samantha',
+      'karen', 'moira', 'tessa', 'female'],
+    de: ['katja', 'hedda', 'vicki', 'anna', 'marlene', 'petra', 'gisela', 'female']
+  };
 
-  var izbranGlas = null;
-  var glasIskan = false;
+  var PRIVZETI_JEZIK = 'en';
 
-  function angleskiGlasovi() {
+  /* 'de', 'de-DE' in 'de_DE' opisujejo isti jezik - obdržimo le prvi del. */
+  function koren(jezik) {
+    return String(jezik || PRIVZETI_JEZIK).toLowerCase().split(/[-_]/)[0];
+  }
+
+  function glasoviZaJezik(jezik) {
     if (!global.speechSynthesis || !global.speechSynthesis.getVoices) return [];
+    var k = koren(jezik);
     var vsi = global.speechSynthesis.getVoices() || [];
-    return vsi.filter(function (g) { return /^en[-_]?/i.test(g.lang || ''); });
+    return vsi.filter(function (g) { return koren(g.lang) === k; });
   }
 
   /* ime glasu razbijemo na besede, da se "ana" ne ujame sredi druge besede */
@@ -119,43 +128,47 @@
     return String(ime || '').toLowerCase().split(/[^a-z]+/).indexOf(beseda) >= 0;
   }
 
-  function najdiGlas() {
-    var angleski = angleskiGlasovi();
-    if (!angleski.length) return null;
+  function najdiGlas(jezik) {
+    var najdeni = glasoviZaJezik(jezik);
+    if (!najdeni.length) return null;
 
-    for (var i = 0; i < ZELENI.length; i++) {
-      var zelen = ZELENI[i];
-      var najden = angleski.filter(function (g) { return imaBesedo(g.name, zelen); })[0];
+    var zeleni = ZELENI[koren(jezik)] || [];
+    for (var i = 0; i < zeleni.length; i++) {
+      var najden = najdeni.filter(function (g) { return imaBesedo(g.name, zeleni[i]); })[0];
       if (najden) return najden;
     }
-    return angleski[0];
+    return najdeni[0];
   }
 
-  function glas() {
-    /* seznam glasov je lahko ob zagonu še prazen, zato poskusimo znova */
-    if (!glasIskan || !izbranGlas) {
-      izbranGlas = najdiGlas();
-      glasIskan = !!izbranGlas;
-    }
-    return izbranGlas;
+  /* Izbrani glas si zapomnimo po jezikih, a le, ko ga res najdemo -
+     seznam glasov je ob zagonu pogosto še prazen, zato pozneje poskusimo znova. */
+  var izbrani = {};
+
+  function glas(jezik) {
+    var k = koren(jezik);
+    if (!izbrani[k]) izbrani[k] = najdiGlas(k);
+    return izbrani[k];
   }
 
   if (global.speechSynthesis) {
     /* brskalnik glasove naloži z zamikom */
     global.speechSynthesis.onvoiceschanged = function () {
-      izbranGlas = najdiGlas();
-      glasIskan = !!izbranGlas;
+      izbrani = {};
+      glas(PRIVZETI_JEZIK);
     };
-    glas();
+    glas(PRIVZETI_JEZIK);
   }
 
+  /* Nemščine ne smemo izgovoriti z angleškim glasom ("Guten Morgen" bi zvenel
+     angleško), zato ob manjkajočem glasu povemo vsaj jezik in pustimo brskalniku,
+     da izbere sam. */
   function izgovori(besedilo, jezik) {
     if (!vklopljen) return false;
     if (!global.speechSynthesis || !global.SpeechSynthesisUtterance) return false;
     try {
       global.speechSynthesis.cancel();
       var u = new global.SpeechSynthesisUtterance(besedilo);
-      var g = glas();
+      var g = glas(jezik);
       if (g) {
         u.voice = g;
         u.lang = g.lang;
@@ -180,6 +193,6 @@
     nastaviZvok: nastaviZvok,
     preklopiZvok: preklopiZvok,
     glas: glas,                      /* kateri glas je izbran (za preverjanje) */
-    glasovi: angleskiGlasovi
+    glasovi: glasoviZaJezik
   };
 })(window);
