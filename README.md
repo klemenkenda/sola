@@ -127,6 +127,7 @@ js/igre/nem-pozdravi.js   nemščina: povezovanje pozdravov s prevodi (oblački)
 js/igre/slo-abeceda.js    slovenščina: abeceda s številkami in skrivno sporočilo
 js/igre/slo-povedi.js     slovenščina: iz pomešanih besed sestavi poved
 js/igre/slo-opis-slike.js slovenščina: podčrtaj povedi, ki sodijo k narisani pikapolonici
+js/igre/slo-branje.js     slovenščina: preberi besedilo in odgovori na vprašanja o njem
 js/igre/mat-postevanka.js matematika: poštevanka do 10
 js/igre/mat-sestevanje.js matematika: seštevanje do 10/20/100
 js/igre/mat-desetka-tetris.js matematika: padajoče kocke, ki se seštejejo v ciljno število
@@ -168,6 +169,7 @@ ki je ta razred nima), stran tiho preusmeri na nadrejeni zaslon.
 | Skrivna abeceda | Slovenščina | 2.–5. | Otrok dopolni pet manjkajočih črk abecede (vsaka ima svojo številko), nato s to abecedo kot ključem razvozla skrivno sporočilo z zmajskega stolpa. |
 | Sestavi poved | Slovenščina | 2.–5. | Besede ene povedi priplavajo kot oblački v pomešanem vrstnem redu; otrok jih s klikom ali vlečenjem zloži v okvirčke pod njimi. Prvo besedo igra napiše z veliko začetnico, na koncu doda piko. |
 | Podčrtaj povedi | Slovenščina | 2.–4. | Pikapolonica se vsakič nariše drugače (očala, pričeska, obleka, pike, obutev, predmet v roki). Otrok pri vsaki povedi pove, ali sodi k sliki; povedi, ki ne sodijo, na koncu popravi z izbiro prave besede. |
+| Beri in odgovori | Slovenščina | 2.–5. | Otrok prebere kratko zgodbico, nato pa o njej dopolnjuje povedi (besedo vpiše) ali izbira med možnostmi. Besedilo ostane na zaslonu, odgovor pa je včasih v njem zapisan naravnost, včasih ga je treba razbrati. |
 | Poštevanka do 10 | Matematika | 3.–5. | Otrok izbere eno poštevanko ali vse pomešano. Namig nariše pravokotnik pikic (npr. 7 vrstic po 9). |
 | Seštevanje | Matematika | 1.–3. | Tri stopnje: do 10, do 20 (privzeto, večinoma s prehodom čez desetico) in do 100. Namig se prilagodi računu. |
 | Desetka — tetris | Matematika | 2.–5. | Kocke s številkami 1–9 padajo z vrha. Ko se tiste, ki stojijo druga na drugi, seštejejo v ciljno število, izginejo. Tri stopnje: 10 z dvema kockama, nad 10 z dvema ali tremi, do 20 s poljubno mnogo. |
@@ -308,6 +310,62 @@ Novo lastnost dodaš tako, da jo pripišeš v seznam `LASTNOSTI` v
 `js/igre/slo-opis-slike.js` (poved s `zapis` in seznam `moznosti`) in narišeš njene
 različice v `likSvg`. Pike se nikoli ne izžrebajo v barvi obleke — na risbi jih ne
 bi bilo videti in otrok povedi o njih ne bi mogel preveriti.
+
+### Beri in odgovori
+
+Vaja bralnega razumevanja: otrok prebere **kratko besedilo** in nato odgovarja na
+vprašanja o njem. Besedilo ostane na zaslonu ves čas — igra ne preverja, ali si je
+otrok kaj zapomnil, ampak ali **razume, kaj piše**, zato se sme vračati k njemu,
+kolikor želi.
+
+Vprašanja so dveh vrst:
+
+- **vpiši besedo** — poved ima na enem mestu prazno okence (*Alenka je šla v hribe
+  s ⟨ ⟩.*); otrok besedo natipka
+- **izberi možnost** — vprašanje z dvema ali tremi odgovori (*V obeh državah sta
+  bila: v istem letu / vsakič v drugem letu*)
+
+Del odgovorov je v besedilu zapisan naravnost, del pa ga je treba **razbrati**:
+da »letos« pomeni isto leto, da so dvojčici rojeni isti dan, da je stolp, ki se je
+podrl pri enaindvajseti kocki, zdržal dvajset. Nekaj vprašanj nima odgovora v
+besedilu — tam je pravilna možnost **»tega besedilo ne pove«**, kar otroka uči, da
+se odgovora ne ugiba.
+
+Pri vpisovanju **šumniki niso pogoj**: »rdece« velja enako kot »rdeče«, pravilen
+zapis pa se otroku izpiše v okencu, ko odgovori. Prav tako veljajo vsi zapisi
+števil in vse enakovredne besede — *deset* in *10*, *avtom* in *avtomobilom*,
+*materi* in *mami*.
+
+- prva napaka — igra pove, naj besedilo prebere še enkrat; pri vpisovanju se
+  samodejno prižge namig
+- druga napaka — igra pokaže pravilen odgovor in ga zapiše med napake
+- **namig** pri vpisovanju razkrije prvo črko in dolžino besede (*kitaro* → `k·····`), pri
+  izbiranju pa odstrani eno napačno možnost (velja kot pomoč, odgovor je vreden 5 točk)
+
+Otrok pred začetkom izbere **📄 eno poved** (56 besedil) ali **📖 celo zgodbico**
+(58 besedil iz dveh ali treh povedi). Skupaj je besedil **114**, vprašanj pa **349**.
+V enem krogu je **8 vprašanj**; zgodbe se jemljejo cele in po vrsti, tako da otrok
+o istem besedilu odgovori na več vprašanj zapored.
+
+Novo besedilo je ena postavka več v seznamu `KRATKA` ali `DALJSA` v
+`js/igre/slo-branje.js`:
+
+```js
+{ besedilo: 'Anton se je v glasbeni šoli začel učiti kitaro.',
+  naloge: [
+    { poved: 'Anton se uči igrati ___.', odgovor: 'kitaro' },
+    { vprasanje: 'Kitaro igra ...', moznosti: ['šele kratek čas', 'že veliko let'] }
+  ] },
+```
+
+Mesto, kamor otrok piše, označimo s `___`. V `odgovor` naštejemo vse sprejemljive
+zapise, ločene z `|` (prvi je tisti, iz katerega igra naredi namig). Pri izbiranju
+je **prva možnost pravilna** — igra jih pred prikazom premeša, zato jih pišemo v
+vrstnem redu, ki se najlažje preveri.
+
+Če ima brskalnik nameščen **slovenski glas**, se ob besedilu pokaže gumb 🔊, ki ga
+prebere na glas; brez njega bi bilo besedilo prebrano s tujim naglasom, zato se
+gumb takrat sploh ne izriše.
 
 ### Desetka — tetris
 

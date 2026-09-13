@@ -1161,7 +1161,16 @@
         napake: []
       };
 
+      var casovnik = null;
+
       pokaziNalogo();
+
+      /* Prehod na naslednje vprašanje počaka; če ga otrok prehiti s klikom,
+         stari odštevalnik ustavimo, da ne preskoči še naslednjega vprašanja. */
+      function cezCas(ms) {
+        global.clearTimeout(casovnik);
+        casovnik = global.setTimeout(naprej, ms);
+      }
 
       function trenutno() {
         return stanje.vprasanja[stanje.kazalec];
@@ -1202,16 +1211,14 @@
 
           (vpisovanje
             ? '<p class="branje-naloga">' + poljeVPovedi(n.poved, prve) + '</p>' +
-              '<div class="vnos-vrsta">' +
-              '<button class="gumb zelen" id="gumb-preveri">Preveri</button>' +
-              '</div>'
+              '<div class="namig-crke" id="namig"></div>'
             : '<p class="branje-naloga">' + n.vprasanje + '</p>' +
               '<div class="moznosti" id="moznosti"></div>') +
 
-          '<div class="namig-crke" id="namig"></div>' +
           '<div class="odziv" id="odziv"></div>' +
 
           '<div class="gumbi-vrsta">' +
+          (vpisovanje ? '<button class="gumb zelen" id="gumb-preveri">Preveri</button>' : '') +
           '<button class="gumb rumen" id="gumb-namig">💡 Namig</button>' +
           '</div>' +
           '</div>';
@@ -1273,7 +1280,7 @@
 
       /* ---------- točkovanje, skupno obema vrstama nalog ---------- */
 
-      function zadel(besedilo) {
+      function zadel() {
         stanje.niz += 1;
         if (stanje.niz > stanje.najdaljsiNiz) stanje.najdaljsiNiz = stanje.niz;
 
@@ -1286,14 +1293,14 @@
 
         var odziv = document.getElementById('odziv');
         odziv.className = 'odziv ok';
-        odziv.textContent = O.pohvala() + ' ' + besedilo + ' +' + prisluzeno + ' točk' +
+        odziv.textContent = O.pohvala() + ' +' + prisluzeno + ' točk' +
           (stanje.niz >= O.NIZ_ZA_BONUS ? ' 🔥' : '');
 
         global.Liki.reagiraj(document.getElementById('lik-igra'), true);
         global.Ucinki.zvok.pravilno();
         global.Ucinki.konfeti(24);
         document.getElementById('gumb-namig').disabled = true;
-        global.setTimeout(naprej, 1900);
+        cezCas(1900);
       }
 
       function zgresil() {
@@ -1326,7 +1333,7 @@
           vnos.disabled = true;
           vnos.blur();
           document.getElementById('gumb-preveri').textContent = 'Naprej ▶';
-          zadel('');
+          zadel();
           return;
         }
 
@@ -1351,7 +1358,7 @@
         odziv.textContent = 'Pravilno je: ' + prave;
         document.getElementById('namig').textContent = '';
         document.getElementById('gumb-preveri').textContent = 'Naprej ▶';
-        shraniNapako(n.poved.replace('___', '___'), prave);
+        shraniNapako(n.poved, prave);
       }
 
       /* ---------- izbiranje med možnostmi ---------- */
@@ -1363,7 +1370,7 @@
         if (izbrana === prava) {
           gumb.classList.add('pravilna');
           zakleniMoznosti();
-          zadel('');
+          zadel();
           return;
         }
 
@@ -1385,7 +1392,7 @@
         odziv.textContent = 'Pravilno je: ' + velika(prava);
         document.getElementById('gumb-namig').disabled = true;
         shraniNapako(n.vprasanje, prava);
-        global.setTimeout(naprej, 2600);
+        cezCas(2600);
       }
 
       function moznostiGumbi() {
@@ -1434,6 +1441,7 @@
 
       function naprej() {
         if (!stanje.odgovorjeno) return;
+        global.clearTimeout(casovnik);
         stanje.kazalec += 1;
         if (stanje.kazalec >= stanje.vprasanja.length) {
           O.koncniZaslon(posoda, ctx, {
