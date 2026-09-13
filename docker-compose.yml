@@ -1,0 +1,13 @@
+services:
+  sola:
+    build: .
+    container_name: sola-pustolovscina
+    ports:
+      - "8080:80"
+    restart: unless-stopped
+    # Med razvojem: datoteke beri neposredno z diska, da ni treba graditi slike znova.
+    # Zakomentiraj te tri vrstice, ce hoces "zamrznjeno" razlicico iz slike.
+    volumes:
+      - ./index.html:/usr/share/nginx/html/index.html:ro
+      - ./css:/usr/share/nginx/html/css:ro
+      - ./js:/usr/share/nginx/html/js:ro

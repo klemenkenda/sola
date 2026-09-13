@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Šolska pustolovščina</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<div class="oblaki" aria-hidden="true">
+  <div class="oblak o1"></div>
+  <div class="oblak o2"></div>
+  <div class="oblak o3"></div>
+</div>
+
+<header id="glava" class="glava skrito">
+  <button id="gumb-nazaj" class="gumb-nazaj" type="button">‹ Nazaj</button>
+  <div class="glava-igralec">
+    <span id="glava-avatar" class="glava-avatar">🦊</span>
+    <span id="glava-ime">Igralec</span>
+  </div>
+  <div class="glava-tocke">
+    <span class="zvezdica">⭐</span>
+    <span id="glava-skupaj">0</span>
+    <small id="glava-obdobje">danes</small>
+  </div>
+</header>
+
+<main id="oder">
+
+  <!-- ZASLON: izbira igralca -->
+  <section id="zaslon-igralci" class="zaslon aktiven">
+    <h1 class="naslov-velik">Šolska <span>pustolovščina</span></h1>
+    <p class="podnaslov">Kdo se bo danes učil?</p>
+
+    <div id="seznam-igralcev" class="kartice-igralcev"></div>
+
+    <div class="shranjevanje">
+      <p class="shranjevanje-naslov">Točke so shranjene v tem brskalniku. Shrani jih v datoteko,
+        če greš na drugo napravo ali če brskalnik čistiš.</p>
+      <div class="gumbi-vrsta">
+        <button id="gumb-shrani-napredek" class="gumb rumen" type="button">⬇️ Shrani napredek</button>
+        <button id="gumb-nalozi-napredek" class="gumb rumen" type="button">⬆️ Naloži napredek</button>
+      </div>
+      <input id="vhod-napredek" type="file" accept="application/json,.json" hidden>
+      <p id="sporocilo-napredek" class="sporocilo-shranjevanja" role="status"></p>
+    </div>
+
+    <div class="sova-uvod">
+      <div id="sova-uvod-lik" class="lik-mesto"></div>
+      <div class="oblacek">Živjo! Jaz sem <b>profesor Uhec</b>. Izberi svoje ime in začnimo!</div>
+    </div>
+  </section>
+
+  <!-- ZASLON: predmeti -->
+  <section id="zaslon-predmeti" class="zaslon">
+    <h2 class="naslov-srednji">Izberi predmet</h2>
+    <p id="pozdrav-predmeti" class="podnaslov"></p>
+    <div class="cipi" id="obdobje-predmeti"></div>
+    <div id="seznam-predmetov" class="mreza-predmetov"></div>
+  </section>
+
+  <!-- ZASLON: izbira igre znotraj predmeta -->
+  <section id="zaslon-igre" class="zaslon">
+    <h2 id="naslov-predmeta" class="naslov-srednji">Predmet</h2>
+    <div class="cipi" id="obdobje-igre"></div>
+    <div id="seznam-iger"></div>
+  </section>
+
+  <!-- ZASLON: igra -->
+  <section id="zaslon-igra" class="zaslon">
+    <div id="igra-vsebina"></div>
+  </section>
+
+</main>
+
+<div id="konfeti" class="konfeti" aria-hidden="true"></div>
+
+<!-- pogovorno okno: nov igralec / urejanje igralca -->
+<div id="okno-igralec" class="okno skrito" role="dialog" aria-modal="true" aria-labelledby="okno-naslov">
+  <div class="okno-vsebina">
+    <h2 id="okno-naslov" class="okno-naslov">Nov igralec</h2>
+
+    <label class="polje">
+      <span>Ime</span>
+      <input id="vnos-ime" type="text" maxlength="20" autocomplete="off" placeholder="npr. Mojca">
+    </label>
+
+    <div class="polja-vrsta">
+      <label class="polje">
+        <span>Starost</span>
+        <input id="vnos-starost" type="number" min="3" max="19" step="1" value="7">
+      </label>
+      <label class="polje">
+        <span>Razred</span>
+        <select id="vnos-razred"></select>
+      </label>
+    </div>
+
+    <div class="polje">
+      <span>Izberi sličico</span>
+      <div id="izbira-avatarja" class="izbira-avatarja"></div>
+    </div>
+
+    <div class="polje">
+      <span>Izberi barvo</span>
+      <div id="izbira-barve" class="izbira-barve"></div>
+    </div>
+
+    <p id="okno-napaka" class="okno-napaka skrito"></p>
+
+    <div class="gumbi-vrsta">
+      <button id="gumb-shrani-igralca" class="gumb zelen" type="button">Shrani</button>
+      <button id="gumb-preklici-igralca" class="gumb rumen" type="button">Prekliči</button>
+    </div>
+    <button id="gumb-izbrisi-igralca" class="gumb-izbris skrito" type="button">🗑️ Izbriši igralca</button>
+  </div>
+</div>
+
+<button id="gumb-zvok" class="gumb-zvok" type="button" aria-pressed="false">🔊</button>
+
+<script src="js/shramba.js"></script>
+<script src="js/igralci.js"></script>
+<script src="js/prenos.js"></script>
+<script src="js/liki.js"></script>
+<script src="js/ucinki.js"></script>
+<script src="js/podatki.js"></script>
+<script src="js/igra-osnova.js"></script>
+<script src="js/igre/ang-stevila.js"></script>
+<script src="js/igre/ang-pozdravi.js"></script>
+<script src="js/igre/ang-besede.js"></script>
+<script src="js/igre/ang-prizor.js"></script>
+<script src="js/igre/mat-postevanka.js"></script>
+<script src="js/igre/mat-sestevanje.js"></script>
+<script src="js/igre/mat-desetka-tetris.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>

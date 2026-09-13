@@ -1,0 +1,13 @@
+# urejevalniki in operacijski sistem
+.vscode/
+.idea/
+Thumbs.db
+desktop.ini
+.DS_Store
+
+# odvisnosti in dnevniki (v tem projektu jih ni, a naj ne zaidejo noter)
+node_modules/
+*.log
+
+# shranjen napredek otrok - v repozitorij ne sodi
+solska-pustolovscina-*.json

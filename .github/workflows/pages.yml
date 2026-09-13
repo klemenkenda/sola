@@ -1,0 +1,46 @@
+# Objava Šolske pustolovščine na GitHub Pages.
+#
+# Stran je čisti HTML/CSS/JS, zato ni kaj graditi - vsebino repozitorija le
+# zapakiramo in objavimo. Ob vsakem potisku v vejo main se stran sama posodobi.
+#
+# Pred prvo objavo v GitHubu: Settings -> Pages -> Source: "GitHub Actions".
+
+name: Objava na GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:        # gumb za ročni zagon v zavihku Actions
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Sočasne objave nimajo smisla; nova naj počaka, tekoče ne prekinjamo.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  objava:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.objavi.outputs.page_url }}
+    steps:
+      - name: Prevzemi kodo
+        uses: actions/checkout@v4
+
+      - name: Pripravi GitHub Pages
+        uses: actions/configure-pages@v5
+
+      # Mapi .git in .github se v paket ne vložita.
+      - name: Zapakiraj stran
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: .
+
+      - name: Objavi
+        id: objavi
+        uses: actions/deploy-pages@v4
